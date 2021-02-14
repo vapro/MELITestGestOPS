@@ -1,16 +1,23 @@
 import requests
 import os
+import argparse
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument("-m", nargs="+")
+value = parser.parse_args()
+
+
 
 
 SITE_ID='MLA'
-SELLER_ID='179571326'
+
 listadoProductos = []
 productos = {}
 
 
+
 def escribirLog(posicion):
-	
-	archivo = SELLER_ID + ".log"
 		
 	if os.path.isfile(archivo):	
 		file = open(archivo, "a")
@@ -23,7 +30,7 @@ def escribirLog(posicion):
 
 
 def consultarSELLER_ID():
-
+	print('entro')
 	url='https://api.mercadolibre.com/sites/{SITE_ID}/search?seller_id={SELLER_ID}'.format(SITE_ID=SITE_ID,SELLER_ID=SELLER_ID)
 	response=requests.get(url)
 	
@@ -42,11 +49,22 @@ def consultarSELLER_ID():
 				productos['NAME'] = responseProductos.json()['name']
 				listadoProductos.append(productos)
 				escribirLog(bucleCantidadResultados)
+	else:
+		print('El ID del vendedor no es valido o no se encuentra dentro del sitio MLA')
 
+print('procesando, por favor, espere.')
 
-print('Recolectando informacion, por favor, espere.')
-consultarSELLER_ID()
-print('Se guardo la informacion en ' + str(archivo))		
+if str(value.m) == 'None':
+	SELLER_ID='179571326'
+	archivo = SELLER_ID + '.log'	
+	consultarSELLER_ID()
+else:
+	archivo = 'multiusuario.log'
+	for bucleCantidadVendedores in value.m:
+		SELLER_ID=bucleCantidadVendedores
+		consultarSELLER_ID()
+
+print('Se finalizo el procesamiento')		
 
 
 
